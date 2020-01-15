@@ -1,4 +1,6 @@
-# rubrik-splunk-hec-agent
+# Rubrik Splunk HEC Agent
+
+Splunk's HTTP Event Collector, or HEC, interface allows systems to post event data directly to Splunk's REST API via HTTP, without the need to have intermediate agents or log aggregation services. Rubrik's Splunk HEC Agent is written in GoLang and runs as a binary, or container, and will pull data from Rubrik CDM, and feed it to Splunk's HEC interface. Providing a way of getting data into Splunk without installing an add-on.
 
 ## :hammer: Installation
 
