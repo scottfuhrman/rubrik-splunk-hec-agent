@@ -8,19 +8,19 @@ import (
 
 // RunwayBody - return interface for runway remaining
 type RunwayBody struct {
-	clusterName string
-	days		float64
+	ClusterName string		`json:"clusterName"`
+	Days		float64		`json:"days"`
 }
 
 // StorageSummaryBody - return interface for storage summary
 type StorageSummaryBody struct {
-	clusterName 	string
-	available		float64
-	liveMount		float64
-	miscellaneous	float64
-	snapshot		float64
-	total			float64
-	used			float64
+	ClusterName 	string		`json:"clusterName"`
+	Available		float64		`json:"available"`
+	LiveMount		float64		`json:"liveMount"`
+	Miscellaneous	float64		`json:"miscellaneous"`
+	Snapshot		float64		`json:"snapshot"`
+	Total			float64		`json:"total"`
+	Used			float64		`json:"used"`
 }
 
 // GetRunwayRemaining ...
@@ -30,8 +30,8 @@ func GetRunwayRemaining(rubrik *rubrikcdm.Credentials, clustername string) strin
 		log.Fatal(err)
 	}
 	response := RunwayBody{
-		clusterName: 	clustername,
-		days:  			runwayRemaining.(map[string]interface{})["days"].(float64),
+		ClusterName: 	clustername,
+		Days:  			runwayRemaining.(map[string]interface{})["days"].(float64),
 	}
 	json, err := json.Marshal(response)
 	if err != nil {
@@ -47,13 +47,13 @@ func GetStorageSummary(rubrik *rubrikcdm.Credentials, clustername string) string
 		log.Fatal(err)
 	}
 	response := StorageSummaryBody{
-		clusterName: 	clustername,
-		available:		storageStats.(map[string]interface{})["available"].(float64),
-		liveMount:		storageStats.(map[string]interface{})["liveMount"].(float64),
-		miscellaneous:	storageStats.(map[string]interface{})["miscellaneous"].(float64),
-		snapshot:		storageStats.(map[string]interface{})["snapshot"].(float64),
-		total:			storageStats.(map[string]interface{})["total"].(float64),
-		used:			storageStats.(map[string]interface{})["used"].(float64),
+		ClusterName: 	clustername,
+		Available:		storageStats.(map[string]interface{})["available"].(float64),
+		LiveMount:		storageStats.(map[string]interface{})["liveMount"].(float64),
+		Miscellaneous:	storageStats.(map[string]interface{})["miscellaneous"].(float64),
+		Snapshot:		storageStats.(map[string]interface{})["snapshot"].(float64),
+		Total:			storageStats.(map[string]interface{})["total"].(float64),
+		Used:			storageStats.(map[string]interface{})["used"].(float64),
 	}
 	json, err := json.Marshal(response)
 	if err != nil {
