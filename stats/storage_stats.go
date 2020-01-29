@@ -4,7 +4,6 @@ import (
 	"log"
 	"github.com/rubrikinc/rubrik-sdk-for-go/rubrikcdm"
 	"encoding/json"
-	"fmt"
 )
 
 // RunwayBody - return interface for runway remaining
