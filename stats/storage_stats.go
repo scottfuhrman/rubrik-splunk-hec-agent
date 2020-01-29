@@ -30,16 +30,14 @@ func GetRunwayRemaining(rubrik *rubrikcdm.Credentials, clustername string) strin
 	if err != nil {
 		log.Fatal(err)
 	}
-	response := &RunwayBody{
+	response := RunwayBody{
 		clusterName: 	clustername,
 		days:  			runwayRemaining.(map[string]interface{})["days"].(float64),
 	}
-	fmt.Println(response)
 	json, err := json.Marshal(response)
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println(json)
 	return string(json)
 }
 
@@ -49,7 +47,7 @@ func GetStorageSummary(rubrik *rubrikcdm.Credentials, clustername string) string
 	if err != nil {
 		log.Fatal(err)
 	}
-	response := &StorageSummaryBody{
+	response := StorageSummaryBody{
 		clusterName: 	clustername,
 		available:		storageStats.(map[string]interface{})["available"].(float64),
 		liveMount:		storageStats.(map[string]interface{})["liveMount"].(float64),
@@ -62,6 +60,5 @@ func GetStorageSummary(rubrik *rubrikcdm.Credentials, clustername string) string
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println(json)
 	return string(json)
 }
