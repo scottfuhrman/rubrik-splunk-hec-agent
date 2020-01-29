@@ -39,6 +39,7 @@ func GetRunwayRemaining(rubrik *rubrikcdm.Credentials, clustername string) strin
 	if err != nil {
 		log.Fatal(err)
 	}
+	fmt.Println(json)
 	return string(json)
 }
 
@@ -57,10 +58,10 @@ func GetStorageSummary(rubrik *rubrikcdm.Credentials, clustername string) string
 		total:			storageStats.(map[string]interface{})["total"].(float64),
 		used:			storageStats.(map[string]interface{})["used"].(float64),
 	}
-	fmt.Println(response)
 	json, err := json.Marshal(response)
 	if err != nil {
 		log.Fatal(err)
 	}
+	fmt.Println(json)
 	return string(json)
 }
