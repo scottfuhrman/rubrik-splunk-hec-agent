@@ -3,7 +3,8 @@ package stats
 import (
 	"log"
 	"github.com/rubrikinc/rubrik-sdk-for-go/rubrikcdm"
-    "encoding/json"
+	"encoding/json"
+	"fmt"
 )
 
 // RunwayBody - return interface for runway remaining
@@ -33,6 +34,7 @@ func GetRunwayRemaining(rubrik *rubrikcdm.Credentials, clustername string) strin
 		clusterName: 	clustername,
 		days:  			runwayRemaining.(map[string]interface{})["days"].(float64),
 	}
+	fmt.Println(response)
 	json, err := json.Marshal(response)
 	if err != nil {
 		log.Fatal(err)
@@ -55,6 +57,7 @@ func GetStorageSummary(rubrik *rubrikcdm.Credentials, clustername string) string
 		total:			storageStats.(map[string]interface{})["total"].(float64),
 		used:			storageStats.(map[string]interface{})["used"].(float64),
 	}
+	fmt.Println(response)
 	json, err := json.Marshal(response)
 	if err != nil {
 		log.Fatal(err)

@@ -66,14 +66,15 @@ func main() {
 	// get our storage summary stats
 	go func() {
 		for {
-			err := splunkClient.LogEvent(&splunk.Event{
+			fmt.Println(stats.GetStorageSummary(rubrik,clusterName))
+			/*err := splunkClient.LogEvent(&splunk.Event{
 				time.Now().Unix(),
 				clusterName,
 				"rubrikhec",
 				"rubrik:storagesummary",
 				splunkIndex,
 				stats.GetStorageSummary(rubrik,clusterName),
-			})
+			})*/
 			//err := splunkClient.LogEvent(stats.GetStorageSummary(rubrik))
 			if err != nil {
 				log.Fatal(err)
@@ -84,6 +85,8 @@ func main() {
 	// get our runway remaining stats
 	go func() {
 		for {
+			fmt.Println(stats.GetRunwayRemaining(rubrik,clusterName))
+			/*
 			err := splunkClient.LogEvent(&splunk.Event{
 				time.Now().Unix(),
 				clusterName,
@@ -92,6 +95,7 @@ func main() {
 				splunkIndex,
 				stats.GetRunwayRemaining(rubrik,clusterName),
 			})
+			*/
 			//err := splunkClient.Log(stats.GetRunwayRemaining(rubrik))
 			if err != nil {
 				log.Fatal(err)
