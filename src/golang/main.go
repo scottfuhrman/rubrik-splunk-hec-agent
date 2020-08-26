@@ -163,6 +163,26 @@ func main() {
 			time.Sleep(time.Duration(4) * time.Hour)
 		}
 	}()
+	// go get man vol summary stats
+	go func() {
+		for {
+			mvSummary := stats.GetManVolSummaryStats(rubrik,clusterName)
+			err := splunkClient.LogEvent(&splunk.Event{
+				time.Now().Unix(),
+				clusterName,
+				"rubrikhec",
+				"rubrik:manvolsummary",
+				splunkIndex,
+				mvSummary,
+			})
+			if err != nil {
+				log.Fatal(err)
+			}
+			log.Printf("Posted rubrik:manvolsummary event.")
+			time.Sleep(time.Duration(4) * time.Hour)
+		}
+	}()
+	
 	// keep application open until terminated
 	for {
 		time.Sleep(time.Duration(1) * time.Hour)
