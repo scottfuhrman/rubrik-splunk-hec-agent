@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"time"
 	"os"
@@ -42,7 +41,7 @@ func main() {
 		log.Fatal(err)
 	}
 	clusterName := clusterDetails.(map[string]interface{})["name"].(string)
-	fmt.Println("Cluster name: "+clusterName)
+	log.Printf("Cluster name: %s",clusterName)
 	// create HTTP client (change InsecureSkipVerify to false if not using self-signed certs)
 	tr := &http.Transport{TLSClientConfig: &tls.Config{InsecureSkipVerify: true}}
 	var httpClient *http.Client
@@ -70,6 +69,7 @@ func main() {
 			if err != nil {
 				log.Fatal(err)
 			}
+			log.Printf("Posted rubrik:storagesummary event.")
 			time.Sleep(time.Duration(1) * time.Minute)
 		}
 	}()
@@ -91,6 +91,7 @@ func main() {
 					log.Fatal(err)
 				}
 			}
+			log.Printf("Posted rubrik:clusteriostats event.")
 			time.Sleep(time.Duration(1) * time.Minute)
 		}
 	}()
@@ -108,6 +109,7 @@ func main() {
 			if err != nil {
 				log.Fatal(err)
 			}
+			log.Printf("Posted rubrik:runwayremaining event.")
 			time.Sleep(time.Duration(1) * time.Hour)
 		}
 	}()
@@ -132,7 +134,33 @@ func main() {
 					}
 				}
 			}
+			log.Printf("Posted %d rubrik:eventfeed events.",len(eventList))
 			time.Sleep(time.Duration(20) * time.Minute)
+		}
+	}()
+	// go get org capacity report stats
+	go func() {
+		for {
+			reportEntryList := stats.GetOrgCapacityReports(rubrik,clusterName)
+			if len(reportEntryList) > 0 {
+				for reportEntry := range reportEntryList {
+					var reportEntryDetails map[string]interface{}
+					json.Unmarshal([]byte(reportEntryList[reportEntry]), &reportEntryDetails)		
+					err := splunkClient.LogEvent(&splunk.Event{
+						time.Now().Unix(),
+						clusterName,
+						"rubrikhec",
+						"rubrik:orgcapacityreport",
+						splunkIndex,
+						reportEntryList[reportEntry],
+					})
+					if err != nil {
+						log.Fatal(err)
+					}
+				}
+			}
+			log.Printf("Posted %d rubrik:orgcapacityreport events.",len(reportEntryList))
+			time.Sleep(time.Duration(4) * time.Hour)
 		}
 	}()
 	// keep application open until terminated

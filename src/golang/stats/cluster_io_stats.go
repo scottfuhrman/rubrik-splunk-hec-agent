@@ -4,7 +4,6 @@ import (
 	"log"
 	"github.com/rubrikinc/rubrik-sdk-for-go/rubrikcdm"
 	"encoding/json"
-	"fmt"
 )
 
 // ClusterIOStatsBody - return interface for cluster IO stats
@@ -30,7 +29,6 @@ func GetClusterIOStats(rubrik *rubrikcdm.Credentials, clustername string) (strin
 	writeBpsData := ioThroughputData.(map[string]interface{})["writeBytePerSecond"].([]interface{})
 	// if one of these slices is empty we will return an empty string
 	if len(readPerSecData) == 0 || len(writePerSecData) == 0 || len(readBpsData) == 0 || len(writeBpsData) == 0 {
-		fmt.Println(clusterIOStats)
 		return "",""
 	}
 	timeStamp := readPerSecData[0].(map[string]interface{})["time"].(string)
