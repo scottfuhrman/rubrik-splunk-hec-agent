@@ -7,8 +7,9 @@ import (
 	"os"
 	"net/http"
 	"crypto/tls"
+	"encoding/json"
 	"github.com/rubrikinc/rubrik-sdk-for-go/rubrikcdm"
-	//"github.com/rubrikinc/rubrik-splunk-hec-agent/src/golang/stats"
+	"github.com/rubrikinc/rubrik-splunk-hec-agent/src/golang/stats"
 	"github.com/rubrikinc/rubrik-splunk-hec-agent/src/golang/events"
 	"github.com/ZachtimusPrime/Go-Splunk-HTTP/splunk"
 )
@@ -55,7 +56,6 @@ func main() {
 		"rubrikhec:default",
 		splunkIndex,
 	)
-	/*
 	// get our storage summary stats
 	go func() {
 		for {
@@ -111,26 +111,28 @@ func main() {
 			time.Sleep(time.Duration(1) * time.Hour)
 		}
 	}()
-	*/
+	// go get event feed
 	go func() {
 		for {
 			eventList := events.GetEventFeed(rubrik,clusterName)
 			if len(eventList) > 0 {
 				for event := range eventList {
+					var eventDetails map[string]interface{}
+					json.Unmarshal([]byte(eventList[event]), &eventDetails)		
 					err := splunkClient.LogEvent(&splunk.Event{
-						time.Now().Unix(),
+						int64(eventDetails["time"].(float64)),
 						clusterName,
 						"rubrikhec",
 						"rubrik:eventfeed",
 						splunkIndex,
-						event,
+						eventList[event],
 					})
 					if err != nil {
 						log.Fatal(err)
 					}
 				}
 			}
-			time.Sleep(time.Duration(1) * time.Minute)
+			time.Sleep(time.Duration(20) * time.Minute)
 		}
 	}()
 	// keep application open until terminated
