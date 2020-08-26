@@ -144,8 +144,8 @@ func main() {
 			reportEntryList := stats.GetOrgCapacityReports(rubrik,clusterName)
 			if len(reportEntryList) > 0 {
 				for reportEntry := range reportEntryList {
-					var reportEntryDetails map[string]interface{}
-					json.Unmarshal([]byte(reportEntryList[reportEntry]), &reportEntryDetails)		
+					//var reportEntryDetails map[string]interface{}
+					//json.Unmarshal([]byte(reportEntryList[reportEntry]), &reportEntryDetails)		
 					err := splunkClient.LogEvent(&splunk.Event{
 						time.Now().Unix(),
 						clusterName,
@@ -182,7 +182,29 @@ func main() {
 			time.Sleep(time.Duration(4) * time.Hour)
 		}
 	}()
-	
+	// go get archive location usage stats
+	go func() {
+		for {
+			archiveLocationList := stats.GetArchiveLocationUsageStats(rubrik,clusterName)
+			if len(archiveLocationList) > 0 {
+				for archiveEntry := range archiveLocationList {
+					err := splunkClient.LogEvent(&splunk.Event{
+						time.Now().Unix(),
+						clusterName,
+						"rubrikhec",
+						"rubrik:archivelocationusage",
+						splunkIndex,
+						archiveLocationList[archiveEntry],
+					})
+					if err != nil {
+						log.Fatal(err)
+					}
+				}
+			}
+			log.Printf("Posted %d rubrik:archivelocationusage events.",len(archiveLocationList))
+			time.Sleep(time.Duration(4) * time.Hour)
+		}
+	}()
 	// keep application open until terminated
 	for {
 		time.Sleep(time.Duration(1) * time.Hour)

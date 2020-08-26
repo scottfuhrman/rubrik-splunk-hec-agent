@@ -6,7 +6,7 @@ import (
 	"encoding/json"
 )
 
-// ClusterIOStatsBody - return interface for cluster IO stats
+// ManVolSummaryBody - return interface for managed volume summary
 type ManVolSummaryBody struct {
 	ClusterName 			string		`json:"clusterName"`
 	Count					float64		`json:"count"`
@@ -16,7 +16,7 @@ type ManVolSummaryBody struct {
 	Smb						int			`json:"smb"`
 }
 
-// GetClusterIOStats ...
+// GetManVolSummaryStats ...
 func GetManVolSummaryStats(rubrik *rubrikcdm.Credentials, clustername string) string {
 	mvSummary,err := rubrik.Get("internal","/managed_volume?is_relic=false&primary_cluster_id=local")
 	if err != nil {
