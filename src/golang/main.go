@@ -231,10 +231,36 @@ func main() {
 					}
 				}
 			}
-			log.Printf("Posted %d rubrik:archivelocationbandwidth event.", len(archiveBandwidthStats))
+			log.Printf("Posted %d rubrik:archivelocationbandwidth events.", len(archiveBandwidthStats))
 			time.Sleep(time.Duration(1) * time.Minute)
 		}
 	}()
+	// go get node stats
+	go func() {
+		for {
+			nodeStats := stats.GetNodeStats(rubrik,clusterName)
+			if len(nodeStats) > 0 {
+				for _, statEntry := range nodeStats {
+					var statsDetails map[string]interface{}
+					json.Unmarshal([]byte(statEntry), &statsDetails)		
+					err := splunkClient.LogEvent(&splunk.Event{
+						int64(statsDetails["time"].(float64)),
+						clusterName,
+						"rubrikhec",
+						"rubrik:nodestats",
+						splunkIndex,
+						statEntry,
+					})
+					if err != nil {
+						log.Panic(err)
+					}
+				}
+			}
+			log.Printf("Posted %d rubrik:nodestats events.", len(nodeStats))
+			time.Sleep(time.Duration(1) * time.Minute)
+		}
+	}()
+
 	// keep application open until terminated
 	for {
 		time.Sleep(time.Duration(1) * time.Hour)
