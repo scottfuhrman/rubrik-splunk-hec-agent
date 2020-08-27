@@ -1,9 +1,9 @@
 package stats
 
 import (
-	"log"
 	"github.com/rubrikinc/rubrik-sdk-for-go/rubrikcdm"
 	"encoding/json"
+	"fmt"
 )
 
 // ManVolSummaryBody - return interface for managed volume summary
@@ -20,7 +20,8 @@ type ManVolSummaryBody struct {
 func GetManVolSummaryStats(rubrik *rubrikcdm.Credentials, clustername string) string {
 	mvSummary,err := rubrik.Get("internal","/managed_volume?is_relic=false&primary_cluster_id=local")
 	if err != nil {
-		log.Fatal(err)
+		fmt.Println("Error from stats.GetManVolSummaryStats: ",err)
+		return ""
 	}
 	countExported := 0
 	countWritable := 0
@@ -50,7 +51,8 @@ func GetManVolSummaryStats(rubrik *rubrikcdm.Credentials, clustername string) st
 	}
 	json, err := json.Marshal(response)
 	if err != nil {
-		log.Fatal(err)
+		fmt.Println("Error from stats.GetManVolSummaryStats: ",err)
+		return ""
 	}
 	return string(json)
 }

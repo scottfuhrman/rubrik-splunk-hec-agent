@@ -27,7 +27,7 @@ type StorageSummaryBody struct {
 func GetRunwayRemaining(rubrik *rubrikcdm.Credentials, clustername string) string {
 	runwayRemaining,err := rubrik.Get("internal","/stats/runway_remaining")
 	if err != nil {
-		log.Fatal(err)
+		log.Panic(err)
 	}
 	response := RunwayBody{
 		ClusterName: 	clustername,
@@ -35,7 +35,7 @@ func GetRunwayRemaining(rubrik *rubrikcdm.Credentials, clustername string) strin
 	}
 	json, err := json.Marshal(response)
 	if err != nil {
-		log.Fatal(err)
+		log.Panic(err)
 	}
 	return string(json)
 }
@@ -44,7 +44,7 @@ func GetRunwayRemaining(rubrik *rubrikcdm.Credentials, clustername string) strin
 func GetStorageSummary(rubrik *rubrikcdm.Credentials, clustername string) string {
 	storageStats,err := rubrik.Get("internal","/stats/system_storage")
 	if err != nil {
-		log.Fatal(err)
+		log.Panic(err)
 	}
 	response := StorageSummaryBody{
 		ClusterName: 	clustername,
@@ -57,7 +57,7 @@ func GetStorageSummary(rubrik *rubrikcdm.Credentials, clustername string) string
 	}
 	json, err := json.Marshal(response)
 	if err != nil {
-		log.Fatal(err)
+		log.Panic(err)
 	}
 	return string(json)
 }

@@ -3,6 +3,7 @@ package stats
 import (
 	"log"
 	"github.com/rubrikinc/rubrik-sdk-for-go/rubrikcdm"
+	"github.com/rubrikinc/rubrik-splunk-hec-agent/src/golang/utils"
 	"encoding/json"
 	"strconv"
 	"time"
@@ -30,7 +31,7 @@ func GetOrgCapacityReports(rubrik *rubrikcdm.Credentials, clustername string) []
 	response := []string{}
 	reportList,err := rubrik.Get("internal","/report?report_template=CapacityOverTime&report_type=Canned")
 	if err != nil {
-		log.Fatal(err)
+		log.Panic(err)
 	}
 	reportId := reportList.(map[string]interface{})["data"].([]interface{})[0].(map[string]interface{})["id"].(string)
 	body := map[string]interface{}{
@@ -39,7 +40,7 @@ func GetOrgCapacityReports(rubrik *rubrikcdm.Credentials, clustername string) []
 		"sortOrder": "desc",
 	}
 	reportDetails,err := rubrik.Post("internal","/report/"+reportId+"/table",body)
-	thisMonth := LeftPad(strconv.Itoa(int(time.Now().Month())),"0",2)
+	thisMonth := utils.LeftPad(strconv.Itoa(int(time.Now().Month())),"0",2)
 	thisYear := strconv.Itoa(int(time.Now().Year()))
 	currentMonthStr := thisYear + "-" + thisMonth
 	reportDataGrid := reportDetails.(map[string]interface{})["dataGrid"].([]interface{})
@@ -56,46 +57,22 @@ func GetOrgCapacityReports(rubrik *rubrikcdm.Credentials, clustername string) []
 				OrganizationId:						thisReportEntryMapped["OrganizationId"].(string),
 				Organization:						thisReportEntryMapped["Organization"].(string),
 				OrganizationState:					thisReportEntryMapped["OrganizationState"].(string),
-				LocalStorage:						ConvertToInt64(thisReportEntryMapped["LocalStorage"].(string)),
-				LocalLogicalBytes:					ConvertToInt64(thisReportEntryMapped["LocalLogicalBytes"].(string)),
-				ArchiveStorage:						ConvertToInt64(thisReportEntryMapped["ArchiveStorage"].(string)),
-				LocalDataReductionPercent:			ConvertToFloat64(thisReportEntryMapped["LocalDataReductionPercent"].(string)),
-				LocalLogicalDataReductionPercent:	ConvertToFloat64(thisReportEntryMapped["LocalLogicalDataReductionPercent"].(string)),
-				ReplicaStorage:						ConvertToInt64(thisReportEntryMapped["ReplicaStorage"].(string)),
-				LocalStorageGrowth:					ConvertToInt64(thisReportEntryMapped["LocalStorageGrowth"].(string)),
-				ReplicaStorageGrowth:				ConvertToInt64(thisReportEntryMapped["ReplicaStorageGrowth"].(string)),
-				ArchiveStorageGrowth:				ConvertToInt64(thisReportEntryMapped["ArchiveStorageGrowth"].(string)),
+				LocalStorage:						utils.ConvertToInt64(thisReportEntryMapped["LocalStorage"].(string)),
+				LocalLogicalBytes:					utils.ConvertToInt64(thisReportEntryMapped["LocalLogicalBytes"].(string)),
+				ArchiveStorage:						utils.ConvertToInt64(thisReportEntryMapped["ArchiveStorage"].(string)),
+				LocalDataReductionPercent:			utils.ConvertToFloat64(thisReportEntryMapped["LocalDataReductionPercent"].(string)),
+				LocalLogicalDataReductionPercent:	utils.ConvertToFloat64(thisReportEntryMapped["LocalLogicalDataReductionPercent"].(string)),
+				ReplicaStorage:						utils.ConvertToInt64(thisReportEntryMapped["ReplicaStorage"].(string)),
+				LocalStorageGrowth:					utils.ConvertToInt64(thisReportEntryMapped["LocalStorageGrowth"].(string)),
+				ReplicaStorageGrowth:				utils.ConvertToInt64(thisReportEntryMapped["ReplicaStorageGrowth"].(string)),
+				ArchiveStorageGrowth:				utils.ConvertToInt64(thisReportEntryMapped["ArchiveStorageGrowth"].(string)),
 			}
 			json, err := json.Marshal(thisEntry)
 			if err != nil {
-				log.Fatal(err)
+				log.Panic(err)
 			}
 			response = append(response,string(json))
 		}
 	}
 	return response
-}
-
-// pads a string with `pad` to length `plength`
-func LeftPad(s string, pad string, plength int) string {
-    for i := len(s); i < plength; i++ {
-        s = pad + s
-    }
-    return s
-}
-
-func ConvertToFloat64(s string) float64 {
-	c,err := strconv.ParseFloat(s,64)
-	if (err != nil) {
-		log.Fatal(err)
-	}
-	return c
-}
-
-func ConvertToInt64(s string) int64 {
-	c,err := strconv.ParseInt(s,10,64)
-	if (err != nil) {
-		log.Fatal(err)
-	}
-	return c
 }

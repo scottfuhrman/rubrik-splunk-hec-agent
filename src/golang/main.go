@@ -23,7 +23,7 @@ func main() {
 	for _, envVar := range envVarsList {
 		_, ok := os.LookupEnv(envVar)
 		if ok != true {
-			log.Fatal("The `",envVar,"` environment variable is not present")
+			log.Panic("The `",envVar,"` environment variable is not present")
 		}
 	}
 	// set our Splunk variables
@@ -33,12 +33,12 @@ func main() {
 	// create Rubrik client
 	rubrik, err := rubrikcdm.ConnectEnv()
 	if err != nil {
-		log.Fatal(err)
+		log.Panic(err)
 	}
 	// get cluster name, also tests connection before we go any further
 	clusterDetails,err := rubrik.Get("v1","/cluster/me")
 	if err != nil {
-		log.Fatal(err)
+		log.Panic(err)
 	}
 	clusterName := clusterDetails.(map[string]interface{})["name"].(string)
 	log.Printf("Cluster name: %s",clusterName)
@@ -67,7 +67,7 @@ func main() {
 				stats.GetStorageSummary(rubrik,clusterName),
 			})
 			if err != nil {
-				log.Fatal(err)
+				log.Panic(err)
 			}
 			log.Printf("Posted rubrik:storagesummary event.")
 			time.Sleep(time.Duration(1) * time.Minute)
@@ -76,19 +76,20 @@ func main() {
 	// get our cluster IO stats
 	go func() {
 		for {
-			json, timeStamp := stats.GetClusterIOStats(rubrik,clusterName)
-			if len(json) > 0 {
+			clusterIoStats := stats.GetClusterIOStats(rubrik,clusterName)
+			if len(clusterIoStats) > 0 {
+				var statsDetails map[string]interface{}
+				json.Unmarshal([]byte(clusterIoStats), &statsDetails)		
 				err := splunkClient.LogEvent(&splunk.Event{
-					//parsedTime.Unix(),
-					convertRubrikTimeToUnixTime(timeStamp),
+					int64(statsDetails["time"].(float64)),
 					clusterName,
 					"rubrikhec",
 					"rubrik:clusteriostats",
 					splunkIndex,
-					json,
+					clusterIoStats,
 				})
 				if err != nil {
-					log.Fatal(err)
+					log.Panic(err)
 				}
 			}
 			log.Printf("Posted rubrik:clusteriostats event.")
@@ -107,7 +108,7 @@ func main() {
 				stats.GetRunwayRemaining(rubrik,clusterName),
 			})
 			if err != nil {
-				log.Fatal(err)
+				log.Panic(err)
 			}
 			log.Printf("Posted rubrik:runwayremaining event.")
 			time.Sleep(time.Duration(1) * time.Hour)
@@ -130,7 +131,7 @@ func main() {
 						eventList[event],
 					})
 					if err != nil {
-						log.Fatal(err)
+						log.Panic(err)
 					}
 				}
 			}
@@ -144,8 +145,6 @@ func main() {
 			reportEntryList := stats.GetOrgCapacityReports(rubrik,clusterName)
 			if len(reportEntryList) > 0 {
 				for reportEntry := range reportEntryList {
-					//var reportEntryDetails map[string]interface{}
-					//json.Unmarshal([]byte(reportEntryList[reportEntry]), &reportEntryDetails)		
 					err := splunkClient.LogEvent(&splunk.Event{
 						time.Now().Unix(),
 						clusterName,
@@ -155,7 +154,7 @@ func main() {
 						reportEntryList[reportEntry],
 					})
 					if err != nil {
-						log.Fatal(err)
+						log.Panic(err)
 					}
 				}
 			}
@@ -167,18 +166,22 @@ func main() {
 	go func() {
 		for {
 			mvSummary := stats.GetManVolSummaryStats(rubrik,clusterName)
-			err := splunkClient.LogEvent(&splunk.Event{
-				time.Now().Unix(),
-				clusterName,
-				"rubrikhec",
-				"rubrik:manvolsummary",
-				splunkIndex,
-				mvSummary,
-			})
-			if err != nil {
-				log.Fatal(err)
+			if len(mvSummary) > 0 {
+				err := splunkClient.LogEvent(&splunk.Event{
+					time.Now().Unix(),
+					clusterName,
+					"rubrikhec",
+					"rubrik:manvolsummary",
+					splunkIndex,
+					mvSummary,
+				})
+				if err != nil {
+					log.Panic(err)
+				}
+				log.Printf("Posted rubrik:manvolsummary event.")
+			} else {
+				log.Printf("No data received for rubrik:manvolsummary.")
 			}
-			log.Printf("Posted rubrik:manvolsummary event.")
 			time.Sleep(time.Duration(4) * time.Hour)
 		}
 	}()
@@ -197,25 +200,43 @@ func main() {
 						archiveLocationList[archiveEntry],
 					})
 					if err != nil {
-						log.Fatal(err)
+						log.Panic(err)
+					}
+				}
+				log.Printf("Posted %d rubrik:archivelocationusage events.",len(archiveLocationList))
+			} else {
+				log.Printf("No data received for rubrik:archivelocationusage.")
+			}
+			time.Sleep(time.Duration(4) * time.Hour)
+		}
+	}()
+	// go get archive location bandwidth stats
+	go func() {
+		for {
+			archiveBandwidthStats := stats.GetArchiveLocationBandwidthStats(rubrik,clusterName)
+			if len(archiveBandwidthStats) > 0 {
+				for _, statEntry := range archiveBandwidthStats {
+					var statDetails map[string]interface{}
+					json.Unmarshal([]byte(statEntry), &statDetails)	
+					err := splunkClient.LogEvent(&splunk.Event{
+						int64(statDetails["time"].(float64)),
+						clusterName,
+						"rubrikhec",
+						"rubrik:archivelocationbandwidth",
+						splunkIndex,
+						statDetails,
+					})
+					if err != nil {
+						log.Panic(err)
 					}
 				}
 			}
-			log.Printf("Posted %d rubrik:archivelocationusage events.",len(archiveLocationList))
-			time.Sleep(time.Duration(4) * time.Hour)
+			log.Printf("Posted %d rubrik:archivelocationbandwidth event.", len(archiveBandwidthStats))
+			time.Sleep(time.Duration(1) * time.Minute)
 		}
 	}()
 	// keep application open until terminated
 	for {
 		time.Sleep(time.Duration(1) * time.Hour)
 	}
-}
-
-// converts rubrik timestamp (RFC3339 format) to an int64 epoch time
-func convertRubrikTimeToUnixTime(RubrikTime string) int64 {
-	parsedTime, e := time.Parse(time.RFC3339, RubrikTime)
-	if e != nil {
-		log.Fatal(e)
-	}
-	return parsedTime.Unix()
 }

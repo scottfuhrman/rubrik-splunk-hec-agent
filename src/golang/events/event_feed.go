@@ -3,6 +3,7 @@ package events
 import (
 	"log"
 	"github.com/rubrikinc/rubrik-sdk-for-go/rubrikcdm"
+	"github.com/rubrikinc/rubrik-splunk-hec-agent/src/golang/utils"
 	"encoding/json"
 	"time"
 	"strings"
@@ -71,7 +72,7 @@ func GetEventFeed(rubrik *rubrikcdm.Credentials, clustername string) []string {
 					Message:		eventInfo["message"].(string),
 					EventStatus:	eventStatus,
 					EventType:		eventType,
-					Time:			convertRubrikTimeToUnixTime(eventDataArray[event].(map[string]interface{})["time"].(string)),
+					Time:			utils.ConvertRubrikTimeToUnixTime(eventDataArray[event].(map[string]interface{})["time"].(string)),
 				}
 				if _, ok := eventDataArray[event].(map[string]interface{})["objectName"]; ok {
 					thisEvent.ObjectName = eventDataArray[event].(map[string]interface{})["objectName"].(string)
@@ -129,7 +130,7 @@ func GetEventFeed(rubrik *rubrikcdm.Credentials, clustername string) []string {
 					Message:		eventInfo["message"].(string),
 					EventStatus:	eventStatus,
 					EventType:		eventType,
-					Time:			convertRubrikTimeToUnixTime(eventDataArray[event].(map[string]interface{})["latestEvent"].(map[string]interface{})["time"].(string)),
+					Time:			utils.ConvertRubrikTimeToUnixTime(eventDataArray[event].(map[string]interface{})["latestEvent"].(map[string]interface{})["time"].(string)),
 				}
 				if _, ok := eventDataArray[event].(map[string]interface{})["latestEvent"].(map[string]interface{})["objectName"]; ok {
 					thisEvent.ObjectName = eventDataArray[event].(map[string]interface{})["latestEvent"].(map[string]interface{})["objectName"].(string)
@@ -182,13 +183,4 @@ func IsStatusValid(status string) bool {
 			return true
 	}
     return false
-}
-
-// converts rubrik timestamp (RFC3339 format) to an int64 epoch time
-func convertRubrikTimeToUnixTime(RubrikTime string) int64 {
-	parsedTime, e := time.Parse(time.RFC3339, RubrikTime)
-	if e != nil {
-		log.Fatal(e)
-	}
-	return parsedTime.Unix()
 }
