@@ -31,7 +31,8 @@ func GetOrgCapacityReports(rubrik *rubrikcdm.Credentials, clustername string) []
 	response := []string{}
 	reportList,err := rubrik.Get("internal","/report?report_template=CapacityOverTime&report_type=Canned")
 	if err != nil {
-		log.Panic(err)
+		log.Println("Error from stats.GetOrgCapacityReports: ",err)
+		return []string{}
 	}
 	reportId := reportList.(map[string]interface{})["data"].([]interface{})[0].(map[string]interface{})["id"].(string)
 	body := map[string]interface{}{
@@ -69,7 +70,8 @@ func GetOrgCapacityReports(rubrik *rubrikcdm.Credentials, clustername string) []
 			}
 			json, err := json.Marshal(thisEntry)
 			if err != nil {
-				log.Panic(err)
+				log.Println("Error from stats.GetOrgCapacityReports: ",err)
+				return []string{}
 			}
 			response = append(response,string(json))
 		}

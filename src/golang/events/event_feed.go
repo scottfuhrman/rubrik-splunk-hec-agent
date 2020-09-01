@@ -33,15 +33,18 @@ func GetEventFeed(rubrik *rubrikcdm.Credentials, clustername string) []string {
 	// get cluster version
 	clusterVersion,err := rubrik.ClusterVersion()
 	if err != nil {
-		log.Fatal(err)
+		log.Println("Error from events.GetEventFeed: ",err)
+		return []string{}
 	}
 	clusterMajorVersion,err := strconv.ParseInt(strings.Split(clusterVersion,".")[0], 10, 64)
 	if err != nil {
-		log.Fatal(err)
+		log.Println("Error from events.GetEventFeed: ",err)
+		return []string{}
 	}
 	clusterMinorVersion,err := strconv.ParseInt(strings.Split(clusterVersion,".")[1], 10, 64)
 	if err != nil {
-		log.Fatal(err)
+		log.Println("Error from events.GetEventFeed: ",err)
+		return []string{}
 	}
 	response := []string{}
 	// get the timestamp for 20 minutes ago
@@ -53,7 +56,8 @@ func GetEventFeed(rubrik *rubrikcdm.Credentials, clustername string) []string {
 	if (clusterMajorVersion == 5 && clusterMinorVersion < 2) || clusterMajorVersion < 5 { // cluster version is older than 5.1
 		eventList,err := rubrik.Get("internal","/event?limit="+eventLimit+"&after_date="+fAfterDate,30)
 		if err != nil {
-			log.Fatal(err)
+			log.Println("Error from events.GetEventFeed: ",err)
+			return []string{}
 		}
 		eventDataArray := eventList.(map[string]interface{})["data"].([]interface{})
 		for event := range eventDataArray {
@@ -96,7 +100,8 @@ func GetEventFeed(rubrik *rubrikcdm.Credentials, clustername string) []string {
 					eventSeriesId := eventDataArray[event].(map[string]interface{})["eventSeriesId"].(string)
 					eventSeriesData,err := rubrik.Get("internal","/event_series/"+eventSeriesId)
 					if err != nil {
-						log.Fatal(err)
+						log.Println("Error from events.GetEventFeed: ",err)
+						return []string{}
 					}
 					if _, ok := eventSeriesData.(map[string]interface{})["username"]; ok {
 						thisEvent.Username = eventSeriesData.(map[string]interface{})["username"].(string)
@@ -104,7 +109,8 @@ func GetEventFeed(rubrik *rubrikcdm.Credentials, clustername string) []string {
 				}
 				json, err := json.Marshal(thisEvent)
 				if err != nil {
-					log.Fatal(err)
+					log.Println("Error from events.GetEventFeed: ",err)
+					return []string{}
 				}
 				response = append(response,string(json))
 			}
@@ -112,7 +118,8 @@ func GetEventFeed(rubrik *rubrikcdm.Credentials, clustername string) []string {
 	} else { // cluster version is 5.2 or newer
 		eventList,err := rubrik.Get("v1","/event/latest?limit="+eventLimit+"&before_date="+fAfterDate)
 		if err != nil {
-			log.Fatal(err)
+			log.Println("Error from events.GetEventFeed: ",err)
+			return []string{}
 		}
 		eventDataArray := eventList.(map[string]interface{})["data"].([]interface{})
 		for event := range eventDataArray {
@@ -154,7 +161,8 @@ func GetEventFeed(rubrik *rubrikcdm.Credentials, clustername string) []string {
 					eventSeriesId := eventDataArray[event].(map[string]interface{})["latestEvent"].(map[string]interface{})["eventSeriesId"].(string)
 					eventSeriesData,err := rubrik.Get("v1","/event_series/"+eventSeriesId)
 					if err != nil {
-						log.Fatal(err)
+						log.Println("Error from events.GetEventFeed: ",err)
+						return []string{}
 					}
 					if _, ok := eventSeriesData.(map[string]interface{})["username"]; ok {
 						thisEvent.Username = eventSeriesData.(map[string]interface{})["username"].(string)
@@ -163,7 +171,8 @@ func GetEventFeed(rubrik *rubrikcdm.Credentials, clustername string) []string {
 
 				json, err := json.Marshal(thisEvent)
 				if err != nil {
-					log.Fatal(err)
+					log.Println("Error from events.GetEventFeed: ",err)
+					return []string{}
 				}
 				response = append(response,string(json))
 			}

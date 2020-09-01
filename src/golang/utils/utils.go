@@ -12,7 +12,8 @@ import (
 func GetLocationNameById(rubrik *rubrikcdm.Credentials, locationId string) string {
 	archiveLocationSummary,err := rubrik.Get("internal","/archive/location")
 	if err != nil {
-		log.Panic(err)
+		log.Println("Error from stats.GetLocationNameById: ",err)
+		return ""
 	}
 	for _, archiveLocation := range archiveLocationSummary.(map[string]interface{})["data"].([]interface{}) {
 		thisLocation := archiveLocation.(map[string]interface{})
@@ -35,14 +36,16 @@ func ConvertRubrikTimeToUnixTime(RubrikTime string) int64 {
 	if rfc3339type.MatchString(RubrikTime) {
 		parsedTime, e := time.Parse(time.RFC3339, RubrikTime)
 		if e != nil {
-			log.Panic(e)
+			log.Println("Error from stats.ConvertRubrikTimeToUnixTime: ",e)
+			return 0
 		}
 		return parsedTime.Unix()
 	} else if stringtype.MatchString(RubrikTime) {
 		const layout = "Mon Jan 2 15:04:05 MST 2006"
 		parsedTime, e := time.Parse(layout, RubrikTime)
 		if e != nil {
-			log.Panic(e)
+			log.Println("Error from stats.ConvertRubrikTimeToUnixTime: ",e)
+			return 0
 		}
 		return parsedTime.Unix()
 	}
@@ -61,7 +64,8 @@ func LeftPad(s string, pad string, plength int) string {
 func ConvertToFloat64(s string) float64 {
 	c,err := strconv.ParseFloat(s,64)
 	if (err != nil) {
-		log.Panic(err)
+		log.Println("Error from stats.ConvertToFloat64: ",err)
+		return 0
 	}
 	return c
 }
@@ -70,7 +74,8 @@ func ConvertToFloat64(s string) float64 {
 func ConvertToInt64(s string) int64 {
 	c,err := strconv.ParseInt(s,10,64)
 	if (err != nil) {
-		log.Panic(err)
+		log.Println("Error from stats.ConvertToInt64: ",err)
+		return 0
 	}
 	return c
 }

@@ -42,7 +42,8 @@ func GetArchiveLocationUsageStats(rubrik *rubrikcdm.Credentials, clustername str
 
 	archiveLocationUsage,err := rubrik.Get("internal","/stats/data_location/usage")
 	if err != nil {
-		log.Panic(err)
+		log.Println("Error from stats.GetArchiveLocationUsageStats: ",err)
+		return []string{}
 	}
 	for _, archiveLocation := range archiveLocationUsage.(map[string]interface{})["data"].([]interface{}) {
 		thisLocation := archiveLocation.(map[string]interface{})
@@ -65,7 +66,8 @@ func GetArchiveLocationUsageStats(rubrik *rubrikcdm.Credentials, clustername str
 		}
 		json, err := json.Marshal(thisEntry)
 		if err != nil {
-			log.Panic(err)
+			log.Println("Error from stats.GetArchiveLocationUsageStats: ",err)
+			return []string{}
 		}
 		response = append(response,string(json))
 	}
@@ -78,7 +80,8 @@ func GetArchiveLocationBandwidthStats(rubrik *rubrikcdm.Credentials, clustername
 
 	archiveLocationSummary,err := rubrik.Get("internal","/archive/location")
 	if err != nil {
-		log.Panic(err)
+		log.Println("Error from stats.GetArchiveLocationBandwidthStats: ",err)
+		return []string{}
 	}
 
 	for _, archiveLocation := range archiveLocationSummary.(map[string]interface{})["data"].([]interface{}) {
@@ -87,7 +90,8 @@ func GetArchiveLocationBandwidthStats(rubrik *rubrikcdm.Credentials, clustername
 			locationId := archiveLocation.(map[string]interface{})["id"].(string)
 			bwTimeSeries,err := rubrik.Get("internal","/stats/archival/bandwidth/time_series?data_location_id="+locationId+"&range=-15min&bandwidth_type="+bwType)
 			if err != nil {
-				log.Panic(err)
+				log.Println("Error from stats.GetArchiveLocationBandwidthStats: ",err)
+				return []string{}
 			}
 			timeSeriesData := bwTimeSeries.([]interface{})
 			thisEntry := ArchiveLocationBandwidthBody{
@@ -100,7 +104,8 @@ func GetArchiveLocationBandwidthStats(rubrik *rubrikcdm.Credentials, clustername
 			}
 			json, err := json.Marshal(thisEntry)
 			if err != nil {
-				log.Panic(err)
+				log.Println("Error from stats.GetArchiveLocationBandwidthStats: ",err)
+				return []string{}
 			}
 			response = append(response,string(json))
 		}

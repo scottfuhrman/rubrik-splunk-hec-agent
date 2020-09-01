@@ -50,6 +50,20 @@ Run this, or the binary created above. Once the agent is running, the results sh
 
 Replacing the index name with whatever you specified with your `SPLUNK_INDEX` environment variable.
 
+The following sourcetypes are exposed:
+
+```none
+rubrik:storagesummary
+rubrik:clusteriostats
+rubrik:runwayremaining
+rubrik:eventfeed
+rubrik:orgcapacityreport
+rubrik:manvolsummary
+rubrik:archivelocationusage
+rubrik:archivelocationbandwidth
+rubrik:nodestats
+```
+
 ## :blue_book: Documentation
 
 Here are some resources to get you started! If you find any challenges from this project are not properly documented or are unclear, please raise an issueand let us know! This is a fun, safe environment - don't worry if you're a GitHub newbie! :heart:

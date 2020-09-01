@@ -29,12 +29,14 @@ func GetNodeStats(rubrik *rubrikcdm.Credentials, clustername string) []string {
 	response := []string{}
 	nodeList,err := rubrik.Get("internal","/node")
 	if err != nil {
-		log.Panic(err)
+		log.Println("Error from stats.GetNodeStats: ",err)
+		return []string{}
 	}
 	for _, node := range nodeList.(map[string]interface{})["data"].([]interface{}) {	
 		thisNodeStats,err := rubrik.Get("internal","/node/"+node.(map[string]interface{})["id"].(string)+"/stats")
 		if err != nil {
-			log.Panic(err)
+			log.Println("Error from stats.GetNodeStats: ",err)
+			return []string{}
 		}
 		thisNodeNetworkStats := thisNodeStats.(map[string]interface{})["networkStat"]
 		iopsData := thisNodeStats.(map[string]interface{})["iops"]
@@ -67,7 +69,8 @@ func GetNodeStats(rubrik *rubrikcdm.Credentials, clustername string) []string {
 		}
 		json, err := json.Marshal(thisEntry)
 		if err != nil {
-			log.Panic(err)
+			log.Println("Error from stats.GetNodeStats: ",err)
+			return []string{}
 		}
 		response = append(response,string(json))
 	}

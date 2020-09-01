@@ -134,8 +134,10 @@ func main() {
 						log.Panic(err)
 					}
 				}
+				log.Printf("Posted %d rubrik:eventfeed events.",len(eventList))
+			} else {
+				log.Printf("No data received for rubrik:eventfeed.")
 			}
-			log.Printf("Posted %d rubrik:eventfeed events.",len(eventList))
 			time.Sleep(time.Duration(20) * time.Minute)
 		}
 	}()
@@ -157,8 +159,10 @@ func main() {
 						log.Panic(err)
 					}
 				}
+				log.Printf("Posted %d rubrik:orgcapacityreport events.",len(reportEntryList))
+			} else {
+				log.Printf("No data received for rubrik:orgcapacityreport.")
 			}
-			log.Printf("Posted %d rubrik:orgcapacityreport events.",len(reportEntryList))
 			time.Sleep(time.Duration(4) * time.Hour)
 		}
 	}()
@@ -230,8 +234,10 @@ func main() {
 						log.Panic(err)
 					}
 				}
+				log.Printf("Posted %d rubrik:archivelocationbandwidth events.", len(archiveBandwidthStats))
+			} else {
+				log.Printf("No data received for rubrik:archivelocationbandwidth.")
 			}
-			log.Printf("Posted %d rubrik:archivelocationbandwidth events.", len(archiveBandwidthStats))
 			time.Sleep(time.Duration(1) * time.Minute)
 		}
 	}()
@@ -255,8 +261,10 @@ func main() {
 						log.Panic(err)
 					}
 				}
+				log.Printf("Posted %d rubrik:nodestats events.", len(nodeStats))
+			} else {
+				log.Printf("No data received for rubrik:nodestats.")
 			}
-			log.Printf("Posted %d rubrik:nodestats events.", len(nodeStats))
 			time.Sleep(time.Duration(1) * time.Minute)
 		}
 	}()

@@ -21,7 +21,8 @@ type ClusterIOStatsBody struct {
 func GetClusterIOStats(rubrik *rubrikcdm.Credentials, clustername string) string {
 	clusterIOStats,err := rubrik.Get("internal","/cluster/me/io_stats?range=-10min")
 	if err != nil {
-		log.Panic(err)
+		log.Println("Error from stats.GetClusterIOStats: ",err)
+		return ""
 	}
 	iopsData := clusterIOStats.(map[string]interface{})["iops"]
 	ioThroughputData := clusterIOStats.(map[string]interface{})["ioThroughput"]
@@ -43,7 +44,8 @@ func GetClusterIOStats(rubrik *rubrikcdm.Credentials, clustername string) string
 	}
 	json, err := json.Marshal(response)
 	if err != nil {
-		log.Panic(err)
+		log.Println("Error from stats.GetClusterIOStats: ",err)
+		return ""
 	}
 	return string(json)
 }
