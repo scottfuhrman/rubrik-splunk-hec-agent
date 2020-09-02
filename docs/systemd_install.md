@@ -16,9 +16,8 @@ Description=Rubrik Splunk HEC Agent
 
 [Service]
 Environment=rubrik_cdm_node_ip=rubrik.demo.com
-Environment=rubrik_cdm_username=svc_prometheus
-Environment=rubrik_cdm_password=Mypassword123!
-Environment=SPLUNK_HEC_TOKEN=3b67fb99-9935-44ef-a35c-69d466c9328a
+Environment=rubrik_cdm_token=1234abcd-2345-67ef-a12b-1234abcd5678
+Environment=SPLUNK_HEC_TOKEN=1234abcd-2345-67ef-a12b-1234abcd5678
 Environment=SPLUNK_URL=https://172.21.11.23:8088/services/collector/event
 Environment=SPLUNK_INDEX=development
 ExecStart=/usr/bin/rubrik_hec_agent
@@ -43,9 +42,9 @@ We can now check the status of the service using the systemctl status command:
    CGroup: /system.slice/rubrik_hec_agent.service
            └─22664 /usr/bin/rubrik_hec_agent
 
-Sep 02 08:39:32 th-prometheus.rangers.lab systemd[1]: Started Rubrik Splunk HEC Agent.
-Sep 02 08:39:32 th-prometheus.rangers.lab rubrik_hec_agent[22664]: 2020/09/02 08:39:32 Cluster name: DEVOPS-1
-Sep 02 08:39:33 th-prometheus.rangers.lab rubrik_hec_agent[22664]: 2020/09/02 08:39:33 Posted rubrik:storagesummary event.
+Sep 02 08:39:32 127.0.0.1 systemd[1]: Started Rubrik Splunk HEC Agent.
+Sep 02 08:39:32 127.0.0.1 rubrik_hec_agent[22664]: 2020/09/02 08:39:32 Cluster name: DEVOPS-1
+Sep 02 08:39:33 127.0.0.1 rubrik_hec_agent[22664]: 2020/09/02 08:39:33 Posted rubrik:storagesummary event.
 #
 ```
 
