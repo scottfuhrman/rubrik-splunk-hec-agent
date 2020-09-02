@@ -15,7 +15,7 @@ go get github.com/rubrikinc/rubrik-splunk-hec-agent
 Clone this repository to the machine configured with GoLang, browse to the root folder, and run the following command to build the package:
 
 ```bash
-CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build main.go -o rubrik_hec_agent
+CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o rubrik_hec_agent
 ```
 
 This will build the package for the linux/amd64 architecture. For other architectures, replace the values of `GOOS` and `GOARCH` as described [here](https://gist.github.com/asukakenji/f15ba7e588ac42795f421b48b8aede63).
