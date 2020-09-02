@@ -15,7 +15,7 @@ go get github.com/rubrikinc/rubrik-splunk-hec-agent
 Clone this repository to the machine configured with GoLang, browse to the root folder, and run the following command to build the package:
 
 ```bash
-CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build main.go
+CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o rubrik_hec_agent
 ```
 
 This will build the package for the linux/amd64 architecture. For other architectures, replace the values of `GOOS` and `GOARCH` as described [here](https://gist.github.com/asukakenji/f15ba7e588ac42795f421b48b8aede63).
@@ -27,13 +27,26 @@ This results in an executable named `main` in the current folder. This can be ru
 The following environment variables must be present:
 
 ```bash
-export rubrik_cdm_node_ip=192.168.0.1
-export rubrik_cdm_username='admin'
-export rubrik_cdm_password='MyPassword123!'
-
 export SPLUNK_HEC_TOKEN='1234abcd-2345-67ef-a12b-1234abcd5678'
 export SPLUNK_URL='https://mysplunkserver:8088/services/collector/event'
 export SPLUNK_INDEX=development
+```
+
+As this project uses the Rubrik SDK for Go it also requires one of the following sets of environment variables:
+
+1 - username/password:
+
+```bash
+export rubrik_cdm_node_ip=192.168.0.1
+export rubrik_cdm_username='admin'
+export rubrik_cdm_password='MyPassword123!'
+```
+
+2 - API token:
+
+```bash
+export rubrik_cdm_node_ip=192.168.0.1
+export rubrik_cdm_token='1234abcd-2345-67ef-a12b-1234abcd5678'
 ```
 
 Once these are present, the HEC agent can be run from within the cloned repo using:
@@ -49,6 +62,20 @@ Run this, or the binary created above. Once the agent is running, the results sh
 ```
 
 Replacing the index name with whatever you specified with your `SPLUNK_INDEX` environment variable.
+
+The following sourcetypes are exposed:
+
+```none
+rubrik:storagesummary
+rubrik:clusteriostats
+rubrik:runwayremaining
+rubrik:eventfeed
+rubrik:orgcapacityreport
+rubrik:manvolsummary
+rubrik:archivelocationusage
+rubrik:archivelocationbandwidth
+rubrik:nodestats
+```
 
 ## :blue_book: Documentation
 
