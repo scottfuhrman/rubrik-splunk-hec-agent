@@ -3,7 +3,7 @@ package stats
 import (
 	"log"
 	"github.com/rubrikinc/rubrik-sdk-for-go/rubrikcdm"
-	"github.com/rubrikinc/rubrik-splunk-hec-agent/src/golang/utils"
+	"github.com/rubrikinc/rubrik-splunk-hec-agent/utils"
 	"encoding/json"
 )
 

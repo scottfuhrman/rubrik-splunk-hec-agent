@@ -8,8 +8,8 @@ import (
 	"crypto/tls"
 	"encoding/json"
 	"github.com/rubrikinc/rubrik-sdk-for-go/rubrikcdm"
-	"github.com/rubrikinc/rubrik-splunk-hec-agent/src/golang/stats"
-	"github.com/rubrikinc/rubrik-splunk-hec-agent/src/golang/events"
+	"github.com/rubrikinc/rubrik-splunk-hec-agent/stats"
+	"github.com/rubrikinc/rubrik-splunk-hec-agent/events"
 	"github.com/ZachtimusPrime/Go-Splunk-HTTP/splunk"
 )
 
