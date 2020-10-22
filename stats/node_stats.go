@@ -27,13 +27,13 @@ type NodeStatsBody struct {
 // GetNodeStats ...
 func GetNodeStats(rubrik *rubrikcdm.Credentials, clustername string) []string {
 	response := []string{}
-	nodeList,err := rubrik.Get("internal","/node")
+	nodeList,err := rubrik.Get("internal","/node",60)
 	if err != nil {
 		log.Println("Error from stats.GetNodeStats: ",err)
 		return []string{}
 	}
 	for _, node := range nodeList.(map[string]interface{})["data"].([]interface{}) {	
-		thisNodeStats,err := rubrik.Get("internal","/node/"+node.(map[string]interface{})["id"].(string)+"/stats")
+		thisNodeStats,err := rubrik.Get("internal","/node/"+node.(map[string]interface{})["id"].(string)+"/stats",60)
 		if err != nil {
 			log.Println("Error from stats.GetNodeStats: ",err)
 			return []string{}
@@ -50,7 +50,7 @@ func GetNodeStats(rubrik *rubrikcdm.Credentials, clustername string) []string {
 		bytesTransmittedData := thisNodeNetworkStats.(map[string]interface{})["bytesTransmitted"].([]interface{})
 		// if one of these slices is empty we will return an empty string
 		if len(readPerSecData) == 0 || len(writePerSecData) == 0 || len(readBpsData) == 0 || len(writeBpsData) == 0 {
-			continue
+			return []string{}
 		}
 		thisEntry := NodeStatsBody{
 			ClusterName: 			clustername,

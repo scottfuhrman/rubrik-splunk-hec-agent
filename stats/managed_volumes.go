@@ -18,7 +18,7 @@ type ManVolSummaryBody struct {
 
 // GetManVolSummaryStats ...
 func GetManVolSummaryStats(rubrik *rubrikcdm.Credentials, clustername string) string {
-	mvSummary,err := rubrik.Get("internal","/managed_volume?is_relic=false&primary_cluster_id=local")
+	mvSummary,err := rubrik.Get("internal","/managed_volume?is_relic=false&primary_cluster_id=local",60)
 	if err != nil {
 		log.Println("Error from stats.GetManVolSummaryStats: ",err)
 		return ""

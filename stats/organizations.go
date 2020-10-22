@@ -29,7 +29,7 @@ type OrgCapacityReportBody struct {
 // GetRunwayRemaining ...
 func GetOrgCapacityReports(rubrik *rubrikcdm.Credentials, clustername string) []string {
 	response := []string{}
-	reportList,err := rubrik.Get("internal","/report?report_template=CapacityOverTime&report_type=Canned")
+	reportList,err := rubrik.Get("internal","/report?report_template=CapacityOverTime&report_type=Canned",60)
 	if err != nil {
 		log.Println("Error from stats.GetOrgCapacityReports: ",err)
 		return []string{}
