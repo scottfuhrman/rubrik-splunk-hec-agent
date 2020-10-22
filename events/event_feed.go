@@ -16,6 +16,7 @@ type EventBody struct {
 	Id				string		`json:"id"`
 	ObjectId		string		`json:"objectId"`
 	ObjectName		string		`json:"objectName"`
+	ObjectType		string		`json:"objectType"`
 	Message			string		`json:"message"`
 	EventStatus		string		`json:"eventStatus"`
 	EventType		string		`json:"eventType"`
@@ -73,6 +74,7 @@ func GetEventFeed(rubrik *rubrikcdm.Credentials, clustername string) []string {
 					ClusterName: 	clustername,
 					Id:				eventDataArray[event].(map[string]interface{})["id"].(string),
 					ObjectId:		eventDataArray[event].(map[string]interface{})["objectId"].(string),
+					ObjectType:		eventDataArray[event].(map[string]interface{})["objectType"].(string),
 					Message:		eventInfo["message"].(string),
 					EventStatus:	eventStatus,
 					EventType:		eventType,
@@ -134,6 +136,7 @@ func GetEventFeed(rubrik *rubrikcdm.Credentials, clustername string) []string {
 					ClusterName: 	clustername,
 					Id:				eventDataArray[event].(map[string]interface{})["latestEvent"].(map[string]interface{})["id"].(string),
 					ObjectId:		eventDataArray[event].(map[string]interface{})["latestEvent"].(map[string]interface{})["objectId"].(string),
+					ObjectType:		eventDataArray[event].(map[string]interface{})["latestEvent"].(map[string]interface{})["objectType"].(string),
 					Message:		eventInfo["message"].(string),
 					EventStatus:	eventStatus,
 					EventType:		eventType,
