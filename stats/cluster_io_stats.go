@@ -19,7 +19,7 @@ type ClusterIOStatsBody struct {
 
 // GetClusterIOStats ...
 func GetClusterIOStats(rubrik *rubrikcdm.Credentials, clustername string) string {
-	clusterIOStats,err := rubrik.Get("internal","/cluster/me/io_stats?range=-10min")
+	clusterIOStats,err := rubrik.Get("internal","/cluster/me/io_stats?range=-10min",60)
 	if err != nil {
 		log.Println("Error from stats.GetClusterIOStats: ",err)
 		return ""

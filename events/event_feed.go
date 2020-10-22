@@ -54,7 +54,7 @@ func GetEventFeed(rubrik *rubrikcdm.Credentials, clustername string) []string {
 	// set the max number of events to retrieve
 	eventLimit := "9999"
 	if (clusterMajorVersion == 5 && clusterMinorVersion < 2) || clusterMajorVersion < 5 { // cluster version is older than 5.1
-		eventList,err := rubrik.Get("internal","/event?limit="+eventLimit+"&after_date="+fAfterDate,30)
+		eventList,err := rubrik.Get("internal","/event?limit="+eventLimit+"&after_date="+fAfterDate,60)
 		if err != nil {
 			log.Println("Error from events.GetEventFeed: ",err)
 			return []string{}
@@ -98,7 +98,7 @@ func GetEventFeed(rubrik *rubrikcdm.Credentials, clustername string) []string {
 				}
 				if eventType == "Recovery" {
 					eventSeriesId := eventDataArray[event].(map[string]interface{})["eventSeriesId"].(string)
-					eventSeriesData,err := rubrik.Get("internal","/event_series/"+eventSeriesId)
+					eventSeriesData,err := rubrik.Get("internal","/event_series/"+eventSeriesId,60)
 					if err != nil {
 						log.Println("Error from events.GetEventFeed: ",err)
 						return []string{}
@@ -116,7 +116,7 @@ func GetEventFeed(rubrik *rubrikcdm.Credentials, clustername string) []string {
 			}
 		}
 	} else { // cluster version is 5.2 or newer
-		eventList,err := rubrik.Get("v1","/event/latest?limit="+eventLimit+"&before_date="+fAfterDate)
+		eventList,err := rubrik.Get("v1","/event/latest?limit="+eventLimit+"&before_date="+fAfterDate,60)
 		if err != nil {
 			log.Println("Error from events.GetEventFeed: ",err)
 			return []string{}
@@ -159,7 +159,7 @@ func GetEventFeed(rubrik *rubrikcdm.Credentials, clustername string) []string {
 				}
 				if eventType == "Recovery" {
 					eventSeriesId := eventDataArray[event].(map[string]interface{})["latestEvent"].(map[string]interface{})["eventSeriesId"].(string)
-					eventSeriesData,err := rubrik.Get("v1","/event_series/"+eventSeriesId)
+					eventSeriesData,err := rubrik.Get("v1","/event_series/"+eventSeriesId,60)
 					if err != nil {
 						log.Println("Error from events.GetEventFeed: ",err)
 						return []string{}

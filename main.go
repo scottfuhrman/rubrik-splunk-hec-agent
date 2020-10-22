@@ -23,6 +23,7 @@ func main() {
 	for _, envVar := range envVarsList {
 		_, ok := os.LookupEnv(envVar)
 		if ok != true {
+			log.Printf("Error from main.go:")
 			log.Panic("The `",envVar,"` environment variable is not present")
 		}
 	}
@@ -36,8 +37,9 @@ func main() {
 		log.Panic(err)
 	}
 	// get cluster name, also tests connection before we go any further
-	clusterDetails,err := rubrik.Get("v1","/cluster/me")
+	clusterDetails,err := rubrik.Get("v1","/cluster/me",60)
 	if err != nil {
+		log.Printf("Error from main.go:")
 		log.Panic(err)
 	}
 	clusterName := clusterDetails.(map[string]interface{})["name"].(string)
@@ -67,6 +69,7 @@ func main() {
 				stats.GetStorageSummary(rubrik,clusterName),
 			})
 			if err != nil {
+				log.Printf("Error from main.go:")
 				log.Panic(err)
 			}
 			log.Printf("Posted rubrik:storagesummary event.")
@@ -89,6 +92,7 @@ func main() {
 					clusterIoStats,
 				})
 				if err != nil {
+					log.Printf("Error from main.go:")
 					log.Panic(err)
 				}
 			}
@@ -108,6 +112,7 @@ func main() {
 				stats.GetRunwayRemaining(rubrik,clusterName),
 			})
 			if err != nil {
+				log.Printf("Error from main.go:")
 				log.Panic(err)
 			}
 			log.Printf("Posted rubrik:runwayremaining event.")
@@ -131,6 +136,7 @@ func main() {
 						eventList[event],
 					})
 					if err != nil {
+						log.Printf("Error from main.go:")
 						log.Panic(err)
 					}
 				}
@@ -156,6 +162,7 @@ func main() {
 						reportEntryList[reportEntry],
 					})
 					if err != nil {
+						log.Printf("Error from main.go:")
 						log.Panic(err)
 					}
 				}
@@ -180,6 +187,7 @@ func main() {
 					mvSummary,
 				})
 				if err != nil {
+					log.Printf("Error from main.go:")
 					log.Panic(err)
 				}
 				log.Printf("Posted rubrik:manvolsummary event.")
@@ -204,6 +212,7 @@ func main() {
 						archiveLocationList[archiveEntry],
 					})
 					if err != nil {
+						log.Printf("Error from main.go:")
 						log.Panic(err)
 					}
 				}
@@ -231,6 +240,7 @@ func main() {
 						statDetails,
 					})
 					if err != nil {
+						log.Printf("Error from main.go:")
 						log.Panic(err)
 					}
 				}
@@ -258,6 +268,7 @@ func main() {
 						statEntry,
 					})
 					if err != nil {
+						log.Printf("Error from main.go:")
 						log.Panic(err)
 					}
 				}

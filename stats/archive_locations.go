@@ -40,7 +40,7 @@ type ArchiveLocationBandwidthBody struct {
 func GetArchiveLocationUsageStats(rubrik *rubrikcdm.Credentials, clustername string) []string {
 	response := []string{}
 
-	archiveLocationUsage,err := rubrik.Get("internal","/stats/data_location/usage")
+	archiveLocationUsage,err := rubrik.Get("internal","/stats/data_location/usage",60)
 	if err != nil {
 		log.Println("Error from stats.GetArchiveLocationUsageStats: ",err)
 		return []string{}
@@ -78,7 +78,7 @@ func GetArchiveLocationUsageStats(rubrik *rubrikcdm.Credentials, clustername str
 func GetArchiveLocationBandwidthStats(rubrik *rubrikcdm.Credentials, clustername string) []string {
 	response := []string{}
 
-	archiveLocationSummary,err := rubrik.Get("internal","/archive/location")
+	archiveLocationSummary,err := rubrik.Get("internal","/archive/location",60)
 	if err != nil {
 		log.Println("Error from stats.GetArchiveLocationBandwidthStats: ",err)
 		return []string{}
@@ -88,7 +88,7 @@ func GetArchiveLocationBandwidthStats(rubrik *rubrikcdm.Credentials, clustername
 		bwTypes := [...]string{"Incoming","Outgoing",}
 		for _, bwType := range bwTypes {
 			locationId := archiveLocation.(map[string]interface{})["id"].(string)
-			bwTimeSeries,err := rubrik.Get("internal","/stats/archival/bandwidth/time_series?data_location_id="+locationId+"&range=-15min&bandwidth_type="+bwType)
+			bwTimeSeries,err := rubrik.Get("internal","/stats/archival/bandwidth/time_series?data_location_id="+locationId+"&range=-15min&bandwidth_type="+bwType,60)
 			if err != nil {
 				log.Println("Error from stats.GetArchiveLocationBandwidthStats: ",err)
 				return []string{}
