@@ -10,7 +10,7 @@ import (
 	"github.com/rubrikinc/rubrik-sdk-for-go/rubrikcdm"
 	"github.com/rubrikinc/rubrik-splunk-hec-agent/stats"
 	"github.com/rubrikinc/rubrik-splunk-hec-agent/events"
-	"github.com/ZachtimusPrime/Go-Splunk-HTTP/splunk"
+	"github.com/ZachtimusPrime/Go-Splunk-HTTP/splunk/v2"
 )
 
 func main() {
